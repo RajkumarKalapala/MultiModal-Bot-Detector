@@ -1,0 +1,8 @@
+torch
+torchvision
+torch-geometric
+transformers
+Pillow
+requests
+gradio
+scikit-learn
