@@ -1,41 +1,36 @@
 Multimodal Fake Profile Detection
 
-This repository contains the code and architecture for a multimodal fake profile detection system, designed to identify sophisticated bot accounts by fusing multiple distinct data streams.
-The Problem
+Live Interactive Demo: https://huggingface.co/spaces/RajkumarSpace/MultiModal-Bot-Detector
 
-Detecting fake profiles on modern social networks is highly complex because malicious actors have evolved. Early bots relied on simple, repetitive scripts, making them easy to catch. Today, coordinated botnets and LLM-generated content can perfectly mimic human typing patterns.
+This repository contains the architecture and implementation of a multimodal neural network designed to detect sophisticated bot accounts and fake profiles across social media platforms.
+The Engineering Problem
 
-Relying on a single modality—such as text analysis alone—is no longer sufficient. A bot might post highly realistic text, but exhibit unnatural following/follower ratios, or use artificially generated profile images. To build a robust detection system, we must analyze the entire profile ecosystem simultaneously.
+Detecting fake profiles is a complex, adversarial challenge. Modern malicious actors no longer rely on simple scripts; they utilize coordinated botnets and LLM-generated content that easily bypass standard text-matching filters.
+
+Relying on a single modality (e.g., NLP on tweets alone) results in high failure rates. A sophisticated bot can generate perfectly coherent, human-like text but will often exhibit anomalous numerical metadata (unnatural following/follower ratios) or highly irregular network graph structures. To build a robust, production-ready detection system, we must process the entire ecosystem of a profile simultaneously and look for contradictions across different data streams.
 The Architecture
 
-To capture the full scope of a profile's behavior, this system moves beyond single-stream analysis and implements a multimodal fusion approach. It utilizes three distinct neural networks, each specialized for a specific data type, before fusing their outputs into a single, unified decision.
+To capture this full spectrum of behavior, our system utilizes a late-fusion multimodal architecture. It routes different data types through specialized, independent neural networks before converging them into a final decision matrix.
 
-    Text Processing Network: Extracts semantic meaning, sentiment, and linguistic patterns from the user's posts and bio descriptions.
+    Text Processing Network: Ingests user posts and bio descriptions to extract semantic meaning, sentiment, and linguistic inconsistencies.
 
-    Metadata/Numerical Network: Processes account statistics like follower counts, account age, and posting frequency to identify unnatural spikes or ratios.
+    Metadata/Numerical Network: Processes raw account statistics (follower counts, account age, posting frequency, variance in activity) to identify unnatural spikes or automated ratios.
 
-    Feature Fusion Layer: The hidden states and feature embeddings from all independent networks are concatenated and passed through dense classification layers.
+    Feature Fusion Layer: The high-dimensional feature embeddings and hidden states from the independent networks are concatenated. This combined vector is then passed through dense classification layers to output a final probability score.
 
-This late-fusion technique ensures that a profile trying to mask its identity in one modality (e.g., posting normal text) will still be flagged by anomalies in another (e.g., network behavior).
-The Dataset: TwiBot-20
+By fusing these modalities, the system cross-references behavior: an account attempting to mask its nature by posting realistic text will still be flagged by anomalies in its underlying metadata.
+Dataset: TwiBot-20
 
-The system is built and evaluated using the TwiBot-20 dataset.
+This model was trained and evaluated using the TwiBot-20 dataset.
 
-About the Dataset:
-TwiBot-20 is a comprehensive, large-scale Twitter bot detection benchmark designed to represent the current generation of the real-world Twittersphere. Unlike older datasets that focus on simple rule-based bots, TwiBot-20 covers diverse domains (politics, business, entertainment, and sports) and captures three crucial modalities of user information:
+TwiBot-20 is a large-scale, highly complex benchmark designed to represent the modern social media landscape. It goes beyond simple bots to include sophisticated profiles across diverse domains (politics, business, entertainment). Crucially, it provides a heavily imbalanced, real-world distribution of genuine users versus malicious actors.
 
-    Semantics: The textual content of a user's recent tweets.
+The dataset captures semantic text, profile properties, and neighborhood topology, making it the ideal baseline for multimodal evaluation.
 
-    Properties: User profile metadata and numerical statistics.
-
-    Neighborhood: The topological graph of follower and following relationships.
-
-Because it includes both highly sophisticated bots and genuine users, it provides a highly complex, heavily imbalanced environment that accurately reflects the challenges of modern social media moderation.
-
-🔗 Dataset Link: TwiBot-20 Official GitHub Repository
+Dataset Source & Documentation: https://github.com/BunsenFeng/TwiBot-20
 Performance Metrics
 
-The following metrics represent our Phase 2 baseline results on the imbalanced TwiBot-20 benchmark:
+The following metrics represent our Phase 2 baseline results evaluated against the imbalanced TwiBot-20 benchmark:
 
     Accuracy: 69.0%
 
@@ -43,4 +38,4 @@ The following metrics represent our Phase 2 baseline results on the imbalanced T
 
     F1-Score: 69.8%
 
-Achieving a high precision score is critical in this domain to minimize false positives and ensure genuine users are not incorrectly penalized.
+Note: In automated moderation environments, achieving a high Precision score (74.0%) is critical to minimizing false positives, ensuring that genuine users are not mistakenly banned or shadowbanned.
